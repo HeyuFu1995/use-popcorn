@@ -23,12 +23,15 @@ StarRating.propTyps = {
     maxRating: PropTypes.number,
 }
 
-function StarRating({ starLength = 5, color = "#fcc419", size = 48, messages = [], defaultRating = 0 }) {
+function StarRating({ starLength = 5, color = "#fcc419", size = 48, messages = [], defaultRating = 0, onSetRating }) {
 
     const ratingArray = Array.from({ length: starLength }, (_, i) => i + 1);
     const [rating, setRating] = useState(defaultRating);
     function handleClick(i) {
         setRating(i + 1);
+        if (onSetRating) {
+            onSetRating(i);
+        }
     }
 
     return (<div style={containerStyle}>
