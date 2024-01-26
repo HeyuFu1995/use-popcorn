@@ -78,11 +78,29 @@ function App() {
   }
 
   useEffect(function () {
+
+    function callback(e) {
+      if (e.code === "Escape") {
+        clearSelect();
+        console.log('CLOSED');
+      }
+    }
+
+    document.addEventListener('keydown', callback);
+
+    return function () {
+      document.removeEventListener('keydown', callback);
+    }
+  }, []
+  );
+
+  useEffect(function () {
     const controller = new AbortController();
 
     async function fetchMovies() {
       try {
         setIsLoading(true);
+        setError("");
         const res = await fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=${query}`, { signal: controller.signal });
 
         if (!res.ok) {
@@ -94,10 +112,13 @@ function App() {
           throw new Error("There is no movie found");
         }
         setMovies(data.Search);
+        setError("");
 
       } catch (err) {
         console.log(err);
-        setError(err.message);
+        if (err.name !== "AbortError") {
+          setError(err.message);
+        }
       } finally {
         setIsLoading(false);
       }
